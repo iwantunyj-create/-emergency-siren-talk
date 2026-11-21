@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>삐이익! 긴급 호출 메신저</title>
+    <title>삐이익! 긴급 호출 메신저 (실시간 직통 경보)</title>
     <!-- Tailwind CSS 로드 -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Noto Sans KR -->
@@ -68,19 +68,19 @@
             </div>
             <div>
                 <h1 class="font-bold text-lg tracking-tight text-white leading-none">긴급 호출 톡</h1>
-                <p class="text-[11px] text-slate-400 mt-0.5">실제 연락처 SMS & 10초 재난 사이렌</p>
+                <p class="text-[11px] text-slate-400 mt-0.5">홈화면 직통 수신 & 10초 재난 사이렌</p>
             </div>
         </div>
         <div class="flex items-center space-x-1.5 sm:space-x-2">
+            <!-- 내 수신번호 & 홈화면 대기 설정 버튼 -->
+            <button id="myStandbyBtn" onclick="openMyNumberModal()" class="bg-purple-600/30 hover:bg-purple-600/40 active:scale-95 text-xs font-bold px-2.5 py-2 rounded-lg text-purple-300 border border-purple-500/50 transition flex items-center gap-1" title="내 번호로 오는 호출 받기">
+                <i class="fa-solid fa-satellite-dish"></i>
+                <span id="myStandbyText">내 번호 등록</span>
+            </button>
             <!-- 시스템 알림 허용 버튼 -->
             <button id="notifPermBtn" onclick="requestNotificationPermission()" class="bg-emerald-600/20 hover:bg-emerald-600/30 active:scale-95 text-xs font-bold px-2.5 py-2 rounded-lg text-emerald-400 border border-emerald-500/40 transition flex items-center gap-1" title="시스템 알림 권한 허용">
                 <i class="fa-solid fa-bell-ring"></i>
-                <span id="notifPermText">알림 허용</span>
-            </button>
-            <!-- 소리 테스트 버튼 -->
-            <button onclick="testSirenSound()" class="bg-slate-700 hover:bg-slate-600 active:scale-95 text-xs font-medium px-2.5 py-2 rounded-lg text-amber-400 border border-amber-500/30 transition flex items-center gap-1.5" title="사이렌 소리 미리듣기">
-                <i class="fa-solid fa-volume-high"></i>
-                <span class="hidden sm:inline">소리 테스트</span>
+                <span id="notifPermText" class="hidden sm:inline">알림 허용</span>
             </button>
             <!-- 친구 추가 버튼 -->
             <button onclick="openAddFriendModal()" class="bg-blue-600 hover:bg-blue-500 active:scale-95 text-xs font-bold px-3 py-2 rounded-lg text-white shadow-md transition flex items-center gap-1.5">
@@ -90,11 +90,22 @@
         </div>
     </header>
 
+    <!-- 홈 화면 백그라운드 수신 대기 상태 바 -->
+    <div id="standbyStatusBar" class="bg-slate-800/90 border-b border-slate-700 px-4 py-2 flex items-center justify-between text-xs">
+        <div class="flex items-center gap-2 text-slate-300">
+            <span id="standbyDot" class="w-2.5 h-2.5 rounded-full bg-slate-500"></span>
+            <span id="standbyStatusText">내 번호를 등록하면 <strong>홈 화면에 나가 있어도</strong> 친구 호출 시 바로 사이렌이 울립니다!</span>
+        </div>
+        <button onclick="openMyNumberModal()" class="bg-purple-600 hover:bg-purple-500 text-white font-bold px-2.5 py-1 rounded-md whitespace-nowrap ml-2">
+            수신 대기 설정
+        </button>
+    </div>
+
     <!-- 알림 권한 안내 배너 (권한 미허용 시 표시) -->
     <div id="permissionBanner" class="bg-amber-500/15 border-b border-amber-500/30 px-4 py-2 flex items-center justify-between text-xs text-amber-200">
         <div class="flex items-center gap-2">
             <i class="fa-solid fa-triangle-exclamation text-amber-400"></i>
-            <span>무음/백그라운드에서도 경보를 받으려면 <strong>[알림 허용]</strong>과 <strong>[무음모드 해제]</strong>를 켜주세요!</span>
+            <span>홈 화면에서 <strong>[Web발신] 팝업과 사이렌</strong>을 받으려면 알림을 허용하세요!</span>
         </div>
         <button onclick="requestNotificationPermission()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-2.5 py-1 rounded-md whitespace-nowrap ml-2">
             지금 허용
@@ -120,8 +131,8 @@
 
             <!-- 하단 안내 배너 -->
             <div class="p-3 bg-slate-900/80 border-t border-slate-700/80 text-[11px] text-slate-400 leading-relaxed space-y-1">
-                <p><i class="fa-solid fa-paper-plane text-blue-400 mr-1"></i>메시지 전송 시 <strong>실제 친구 전화번호(SMS)</strong> 또는 <strong>카톡</strong>으로 10초 사이렌 링크가 발송됩니다.</p>
-                <p class="text-amber-400/90"><i class="fa-solid fa-volume-high mr-1"></i>무음/방해금지 돌파 모드: 초고음 부스트(2.85kHz) 적용됨</p>
+                <p><i class="fa-solid fa-bolt text-amber-400 mr-1"></i><strong>직통 발사:</strong> 친구도 내 번호를 등록해 두면 보내자마자 친구 폰에서 즉시 사이렌이 터집니다.</p>
+                <p class="text-purple-300"><i class="fa-solid fa-mobile-screen mr-1"></i>홈 버튼으로 나가 있어도 백그라운드 대기 모드가 소리를 울립니다.</p>
             </div>
         </aside>
 
@@ -187,13 +198,45 @@
                         autocomplete="off">
                     <button type="submit" 
                         class="bg-red-600 hover:bg-red-500 active:scale-95 text-white font-bold px-5 py-3.5 rounded-xl shadow-lg shadow-red-600/30 transition flex items-center gap-2 whitespace-nowrap">
-                        <i class="fa-solid fa-bell"></i>
-                        <span>사이렌 전송</span>
+                        <i class="fa-solid fa-bolt"></i>
+                        <span>즉시 직통 발사</span>
                     </button>
                 </form>
             </div>
         </section>
     </main>
+
+    <!-- [모달 0] 내 수신 번호 등록 및 홈화면 백그라운드 대기 설정 모달 -->
+    <div id="myNumberModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-800 border border-purple-500/50 rounded-3xl w-full max-w-md p-6 shadow-2xl">
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="text-lg font-black text-white flex items-center gap-2">
+                    <i class="fa-solid fa-satellite-dish text-purple-400"></i> 홈 화면 직통 수신 설정
+                </h3>
+                <button onclick="closeMyNumberModal()" class="text-slate-400 hover:text-white p-1">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed mb-4">
+                내 이름과 전화번호를 등록해 두면, <strong>홈 화면에 나가 있거나 다른 앱을 쓰는 중에도</strong> 친구가 나를 호출하는 즉시 <strong>[Web발신] 알림과 10초 사이렌</strong>이 자동으로 울립니다!
+            </p>
+            <form onsubmit="saveMyNumberAndStartStandby(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">내 이름</label>
+                    <input type="text" id="myNameInput" required placeholder="예: 홍길동" 
+                        class="w-full bg-slate-900 text-white rounded-xl px-4 py-3 text-sm border border-slate-700 focus:outline-none focus:border-purple-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">내 전화번호 (친구가 나를 등록한 번호)</label>
+                    <input type="tel" id="myPhoneInput" required placeholder="예: 010-1234-5678" oninput="formatPhoneNumber(this)" maxlength="13"
+                        class="w-full bg-slate-900 text-white rounded-xl px-4 py-3 text-sm border border-slate-700 focus:outline-none focus:border-purple-500">
+                </div>
+                <button type="submit" class="w-full bg-purple-600 hover:bg-purple-500 active:scale-95 text-white font-black py-3.5 rounded-xl shadow-lg shadow-purple-600/30 transition text-sm mt-2">
+                    <i class="fa-solid fa-power-off mr-1"></i> 홈 화면 수신 대기 모드 켜기
+                </button>
+            </form>
+        </div>
+    </div>
 
     <!-- [모달 1] 친구 추가 모달 -->
     <div id="addFriendModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 hidden flex items-center justify-center p-4">
@@ -236,7 +279,7 @@
             
             <!-- 상단 재난문자 뱃지 -->
             <div class="inline-flex items-center gap-2 bg-red-600 text-white text-xs font-black px-3 py-1 rounded-full uppercase tracking-widest mb-4 animate-pulse">
-                <i class="fa-solid fa-triangle-exclamation"></i> 긴급 호출 경보 발령
+                <i class="fa-solid fa-triangle-exclamation"></i> [Web발신] 긴급 재난경보
             </div>
 
             <!-- 흔들리는 사이렌 아이콘 -->
@@ -280,42 +323,36 @@
         <div class="bg-slate-800 border border-slate-600 rounded-3xl w-full max-w-md p-6 shadow-2xl">
             <div class="flex items-center gap-3 mb-3">
                 <div class="w-12 h-12 rounded-2xl bg-emerald-600/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 text-xl">
-                    <i class="fa-solid fa-check-double"></i>
+                    <i class="fa-solid fa-bolt"></i>
                 </div>
                 <div>
-                    <h3 class="text-lg font-black text-white">친구에게 100% 전송 준비 완료!</h3>
+                    <h3 class="text-lg font-black text-white">직통 사이렌 발사 완료!</h3>
                     <p id="realSendTargetInfo" class="text-xs text-emerald-300 font-bold">받는 사람: 010-0000-0000</p>
                 </div>
             </div>
 
             <div class="bg-slate-900/90 border border-slate-700 rounded-2xl p-3.5 mb-4 text-xs text-slate-300 leading-relaxed space-y-1">
-                <p class="font-bold text-amber-400">✅ 원하는 전송 방식을 선택하세요!</p>
-                <p>• <strong>내 폰에서는 울리지 않고 친구 폰에서만</strong> 10초 사이렌이 울립니다.</p>
-                <p>• 친구가 확인 버튼을 누르면 <strong>내 폰으로도 확인 알림</strong>이 옵니다.</p>
+                <p class="font-bold text-emerald-400">⚡ 클라우드 직통 신호가 전송되었습니다!</p>
+                <p>• 친구가 홈 화면 대기 중이면 <strong>별도 조작 없이 즉시 사이렌</strong>이 울립니다.</p>
+                <p>• 만약 친구가 아직 이 사이트에 한 번도 안 들어왔다면 아래 버튼으로 초대 링크를 한 번만 보내주세요!</p>
             </div>
 
             <div class="space-y-2.5">
                 <!-- 1. 실제 친구 전화번호로 문자(SMS) 앱 바로 열기 -->
                 <a id="directSmsLink" href="#" onclick="closeRealSendModal()" class="w-full bg-red-600 hover:bg-red-500 active:scale-95 text-white font-black py-4 px-4 rounded-xl shadow-lg shadow-red-600/30 flex items-center justify-center gap-2 transition text-sm">
                     <i class="fa-solid fa-comment-sms text-xl"></i>
-                    <span>친구 전화번호로 문자(SMS) 바로 보내기</span>
+                    <span>친구에게 문자(SMS)로도 함께 보내기</span>
                 </a>
 
                 <!-- 2. 카톡/다른 앱 공유 시트 열기 -->
                 <button onclick="shareEmergencyCall()" class="w-full bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-black py-3.5 px-4 rounded-xl shadow-lg shadow-emerald-600/30 flex items-center justify-center gap-2 transition text-sm">
                     <i class="fa-solid fa-share-nodes text-lg"></i>
-                    <span>카카오톡 / 다른 메신저로 바로 보내기</span>
-                </button>
-
-                <!-- 3. 원클릭 전체 복사 -->
-                <button onclick="copyEmergencyMessage()" class="w-full bg-slate-700 hover:bg-slate-600 active:scale-95 text-amber-300 font-bold py-3 px-4 rounded-xl border border-slate-600 flex items-center justify-center gap-2 transition text-xs">
-                    <i class="fa-solid fa-copy"></i>
-                    <span>긴급 메시지 + 사이렌 링크 복사하기</span>
+                    <span>카카오톡 / 메신저로 링크 공유하기</span>
                 </button>
             </div>
 
             <button onclick="closeRealSendModal()" class="w-full mt-3 text-slate-400 hover:text-white text-xs py-2">
-                닫기
+                닫기 (직통 발사 완료)
             </button>
         </div>
     </div>
@@ -345,17 +382,101 @@
         <span id="toastMessage">알림 메시지</span>
     </div>
 
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Firebase 실시간 클라우드 직통 통신 초기화 (환경 변수 존재 시 활성화)
+        let db = null;
+        let auth = null;
+        let appId = typeof __app_id !== 'undefined' ? __app_id : 'emergency-siren-talk-v1';
+
+        window.cloudAlertSystem = {
+            isReady: false,
+            unsubscribe: null,
+            lastAlertId: null,
+
+            async init() {
+                try {
+                    if (typeof __firebase_config === 'undefined') return;
+                    const firebaseConfig = JSON.parse(__firebase_config);
+                    const app = initializeApp(firebaseConfig);
+                    auth = getAuth(app);
+                    db = getFirestore(app);
+
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                    this.isReady = true;
+                    window.startListeningMyPhone();
+                } catch (e) {
+                    console.warn("클라우드 직통 통신 대기 모드:", e);
+                }
+            },
+
+            async sendDirectAlert(targetPhone, senderName, senderPhone, messageText) {
+                if (!this.isReady || !db || !auth.currentUser) return false;
+                try {
+                    const cleanTarget = targetPhone.replace(/[^0-9]/g, '');
+                    const alertsCol = collection(db, 'artifacts', appId, 'public', 'data', 'emergency_alerts');
+                    await addDoc(alertsCol, {
+                        targetPhone: cleanTarget,
+                        senderName: senderName || '친구',
+                        senderPhone: senderPhone || '',
+                        messageText: messageText,
+                        timestamp: Date.now()
+                    });
+                    return true;
+                } catch (e) {
+                    console.error("직통 발사 오류:", e);
+                    return false;
+                }
+            },
+
+            listenForMyPhone(myPhone, onAlertReceived) {
+                if (!this.isReady || !db || !auth.currentUser) return;
+                if (this.unsubscribe) this.unsubscribe();
+
+                const cleanMyPhone = myPhone.replace(/[^0-9]/g, '');
+                const alertsCol = collection(db, 'artifacts', appId, 'public', 'data', 'emergency_alerts');
+                const startTime = Date.now() - 5000;
+
+                this.unsubscribe = onSnapshot(alertsCol, (snapshot) => {
+                    snapshot.docChanges().forEach((change) => {
+                        if (change.type === 'added') {
+                            const data = change.doc.data();
+                            if (data.targetPhone === cleanMyPhone && data.timestamp > startTime && this.lastAlertId !== change.doc.id) {
+                                this.lastAlertId = change.doc.id;
+                                onAlertReceived(data);
+                            }
+                        }
+                    });
+                }, (err) => {
+                    console.error("수신 리스너 오류:", err);
+                });
+            }
+        };
+
+        window.cloudAlertSystem.init();
+    </script>
+
     <script>
         /**
          * ============================================================================
-         * 1. 설정 및 상태 관리 (GitHub Pages 정식 도메인 고정)
+         * 1. 설정 및 상태 관리 (홈 화면 백그라운드 오디오 유지 + 직통 수신)
          * ============================================================================
          */
         const SITE_BASE_URL = 'https://iwantunyj-create.github.io/-emergency-siren-talk/';
         let friends = JSON.parse(localStorage.getItem('emergency_friends')) || [];
+        let myProfile = JSON.parse(localStorage.getItem('emergency_my_profile')) || null;
 
         let activeFriendId = null;
         let audioCtx = null;
+        let silentKeepAliveOsc = null;
+        let wakeLock = null;
         let sirenInterval = null;
         let countdownInterval = null;
         let activeOscillators = [];
@@ -368,6 +489,7 @@
             renderFriendList();
             checkNotificationStatus();
             checkIncomingEmergencyLink();
+            updateStandbyUI();
 
             if (window.innerWidth >= 768 && friends.length > 0) {
                 selectFriend(friends[0].id);
@@ -380,43 +502,87 @@
             }
         });
 
-        function closeWelcomeModal() {
-            document.getElementById('welcomePermissionModal').classList.add('hidden');
+        function openMyNumberModal() {
+            if (myProfile) {
+                document.getElementById('myNameInput').value = myProfile.name || '';
+                document.getElementById('myPhoneInput').value = myProfile.phone || '';
+            }
+            document.getElementById('myNumberModal').classList.remove('hidden');
         }
 
-        async function approveAllPermissions() {
-            closeWelcomeModal();
-            await requestNotificationPermission();
+        function closeMyNumberModal() {
+            document.getElementById('myNumberModal').classList.add('hidden');
         }
 
-        // URL 파라미터로 긴급 호출 링크를 타고 들어온 경우 처리
-        function checkIncomingEmergencyLink() {
-            const params = new URLSearchParams(window.location.search);
-            const alertMsg = params.get('alert');
-            const fromName = params.get('from') || '친구';
-            const ackMsg = params.get('ack');
+        async function saveMyNumberAndStartStandby(e) {
+            e.preventDefault();
+            const name = document.getElementById('myNameInput').value.trim();
+            const phone = document.getElementById('myPhoneInput').value.trim();
+            if (!name || !phone) return;
 
-            // 1) 친구가 내 호출을 확인하고 답장 링크를 누른 경우 -> 내 폰에 수신 확인 알림!
-            if (ackMsg) {
-                setTimeout(() => {
-                    showToast(`✅ ${fromName}님이 긴급 호출을 확인했습니다!`);
-                    if ('Notification' in window && Notification.permission === 'granted') {
-                        new Notification(`✅ [확인 완료] ${fromName}`, {
-                            body: `${fromName}님이 보낸 긴급 메시지를 확인했습니다!`,
-                            requireInteraction: true
-                        });
-                    }
-                }, 300);
-                return;
+            myProfile = { name, phone };
+            localStorage.setItem('emergency_my_profile', JSON.stringify(myProfile));
+            closeMyNumberModal();
+
+            // 1. 알림 권한 요청
+            if ('Notification' in window && Notification.permission !== 'granted') {
+                await requestNotificationPermission();
             }
 
-            // 2) 내가 긴급 호출을 받은 경우 -> 10초 재난 사이렌 폭발!
-            if (alertMsg) {
-                isIncomingAlertMode = true;
-                currentIncomingSender = fromName;
-                setTimeout(() => {
-                    triggerEmergencyAlert(fromName, '긴급 호출 수신', alertMsg, 10);
-                }, 300);
+            // 2. 홈 화면 백그라운드 오디오 엔진 & 화면 꺼짐 방지(WakeLock) 가동
+            enableBackgroundAudioKeepAlive();
+            updateStandbyUI();
+            window.startListeningMyPhone();
+
+            showToast(`✅ 홈 화면 수신 대기 활성화! (${phone}) 이제 홈에 나가 있어도 사이렌이 울립니다.`);
+        }
+
+        // 홈 화면/백그라운드에서도 브라우저 오디오 엔진이 잠들지 않도록 무음 초저주파 유지
+        async function enableBackgroundAudioKeepAlive() {
+            try {
+                initAudioContext();
+                if (!silentKeepAliveOsc && audioCtx) {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.frequency.setValueAtTime(20, audioCtx.currentTime); // 가청영역 밖 20Hz
+                    gain.gain.setValueAtTime(0.0001, audioCtx.currentTime); // 완전 무음 수준으로 오디오 세션만 유지
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start();
+                    silentKeepAliveOsc = osc;
+                }
+                if ('wakeLock' in navigator && !wakeLock) {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                }
+            } catch (e) {
+                console.warn("백그라운드 오디오 유지 설정:", e);
+            }
+        }
+
+        window.startListeningMyPhone = function() {
+            if (myProfile && myProfile.phone && window.cloudAlertSystem) {
+                window.cloudAlertSystem.listenForMyPhone(myProfile.phone, (alertData) => {
+                    isIncomingAlertMode = true;
+                    currentIncomingSender = alertData.senderName;
+                    triggerEmergencyAlert(
+                        alertData.senderName,
+                        alertData.senderPhone || '직통 긴급 호출',
+                        alertData.messageText,
+                        10
+                    );
+                });
+            }
+        };
+
+        function updateStandbyUI() {
+            const btnText = document.getElementById('myStandbyText');
+            const statusText = document.getElementById('standbyStatusText');
+            const dot = document.getElementById('standbyDot');
+
+            if (myProfile && myProfile.phone) {
+                btnText.textContent = `${myProfile.name} 대기중`;
+                dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping';
+                statusText.innerHTML = `<strong>[홈화면 대기 ON]</strong> 내 번호(${myProfile.phone})로 호출 시 백그라운드에서도 10초 사이렌 작동!`;
             }
         }
 
@@ -530,16 +696,18 @@
 
             if ('Notification' in window && Notification.permission === 'granted') {
                 try {
-                    new Notification(`🚨 [긴급 호출] ${senderName}`, {
+                    new Notification(`🚨 [Web발신] ${senderName}님의 긴급 재난경보`, {
                         body: messageText,
                         requireInteraction: true,
-                        vibrate: [800, 200, 800, 200, 800]
+                        tag: 'emergency-siren-alert',
+                        renotify: true,
+                        vibrate: [800, 200, 800, 200, 800, 200, 800]
                     });
                 } catch (e) {}
             }
 
             const overlay = document.getElementById('emergencyOverlay');
-            document.getElementById('alertSenderTitle').textContent = `🚨 ${senderName}님의 긴급 호출`;
+            document.getElementById('alertSenderTitle').textContent = `[Web발신] ${senderName}님의 호출`;
             document.getElementById('alertSenderPhone').textContent = senderPhone;
             document.getElementById('alertMessageBody').textContent = messageText;
             
@@ -853,6 +1021,14 @@
             renderMessages(friend);
             renderFriendList();
 
+            // 1. 클라우드 직통 신호 발사 (친구 폰이 홈화면 대기 중이면 즉시 사이렌 폭발!)
+            if (window.cloudAlertSystem) {
+                const senderName = myProfile ? myProfile.name : '친구';
+                const senderPhone = myProfile ? myProfile.phone : '';
+                window.cloudAlertSystem.sendDirectAlert(friend.phone, senderName, senderPhone, text);
+            }
+
+            // 2. 혹시 친구가 사이트에 안 들어와 있을 경우를 대비해 SMS/카톡 초대창도 함께 표시
             openRealSendModal(friend, text);
         }
 
